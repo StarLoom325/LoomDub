@@ -1,0 +1,771 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoomDub | چالش دوبله</title>
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #151d33;
+  --border: #2b3858;
+  --text: #f1f5ff;
+  --muted: #aab7d2;
+  --purple: #795bff;
+  --cyan: #29d3e8;
+  --green: #31c990;
+  --red: #ff617b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top, #1a2850, var(--bg) 65%);
+  line-height: 1.9;
+}
+header {
+  padding: 15px 6%;
+  border-bottom: 1px solid var(--border);
+  background: #0b1020eF;
+  position: sticky;
+  top: 0;
+}
+nav {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.logo { font-size: 25px; font-weight: bold; }
+.logo span { color: var(--cyan); }
+a { color: var(--cyan); text-decoration: none; }
+nav a { margin: 0 7px; }
+.container { width: min(1100px, 92%); margin: auto; }
+.hero {
+  padding: 65px 0 35px;
+  text-align: center;
+}
+h1 { font-size: clamp(32px, 5vw, 55px); line-height: 1.4; }
+h1 span { color: var(--cyan); }
+.hero p, .muted { color: var(--muted); }
+section { padding: 30px 0; }
+h2 { font-size: 28px; }
+.panel {
+  background: linear-gradient(145deg, #192340, #11182b);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 23px;
+  margin-bottom: 18px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.feature {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 18px;
+}
+.feature p { color: var(--muted); }
+button {
+  border: 0;
+  border-radius: 11px;
+  padding: 12px 17px;
+  margin: 4px;
+  font: inherit;
+  font-weight: bold;
+  color: white;
+  background: var(--purple);
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.15); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.green { background: #159b72; }
+.red { background: #d83f5b; }
+.gray { background: #2b3858; }
+.prompt {
+  background: #0c1428;
+  border: 1px dashed #53678e;
+  padding: 18px;
+  border-radius: 13px;
+  font-size: 20px;
+  min-height: 90px;
+}
+.status { min-height: 35px; color: var(--muted); }
+.ok { color: #6de4b2; }
+.error { color: #ff91a3; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+.stat {
+  background: #0c1428;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 5px;
+}
+.stat strong {
+  display: block;
+  font-size: 25px;
+  color: var(--cyan);
+}
+.stat small { color: var(--muted); }
+.meter {
+  height: 10px;
+  background: #293653;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+#meterBar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--cyan));
+  transition: width .1s;
+}
+audio { width: 100%; margin-top: 15px; }
+.notice {
+  background: #202c47;
+  padding: 13px;
+  border-radius: 12px;
+  color: #d1d9eb;
+  font-size: 14px;
+}
+footer {
+  text-align: center;
+  padding: 30px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* شمارش معکوس تمام صفحه */
+#countOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #050918f5;
+  text-align: center;
+  padding: 20px;
+}
+#countOverlay.show { display: flex; }
+#countNumber {
+  font-size: clamp(120px, 25vw, 230px);
+  font-weight: 900;
+  color: var(--cyan);
+  line-height: 1.4;
+  text-shadow: 0 0 45px #29d3e877;
+  animation: pop .8s ease;
+}
+#countCaption { color: var(--muted); font-size: 20px; }
+@keyframes pop {
+  0% { transform: scale(.5); opacity: .1; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@media(max-width:700px) {
+  .grid { grid-template-columns: 1fr; }
+  nav { justify-content: center; }
+  .hero { padding-top: 35px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">Loom<span>Dub</span></div>
+    <div>
+      <a href="#features">امکانات</a>
+      <a href="#challenge">چالش دوبله</a>
+      <a href="#social">شبکه‌ها</a>
+    </div>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>به دنیای <span>LoomDub</span> خوش آمدی!</h1>
+    <p>صدایت را ضبط کن، دوبله کن، گوش بده و مهارتت را تمرین کن.</p>
+    <button onclick="document.getElementById('challenge').scrollIntoView({behavior:'smooth'})">
+      🎙️ شروع چالش دوبله
+    </button>
+  </div>
+
+  <section id="features">
+    <h2>✨ امکانات LoomDub</h2>
+    <div class="grid">
+      <div class="feature">
+        <h3>🎙️ ضبط صدا</h3>
+        <p>ضبط صدا با شمارش معکوس، توقف، بازشنوی و دانلود فایل.</p>
+      </div>
+      <div class="feature">
+        <h3>🎬 تدوین ویدیو</h3>
+        <p>نسخه دسکتاپ می‌تواند برای کار با ویدیو و صدای دوبله استفاده شود.</p>
+      </div>
+      <div class="feature">
+        <h3>🎚️ تایم‌لاین چندترکه</h3>
+        <p>سازمان‌دهی صدای اصلی، دوبله، موسیقی و افکت‌های صوتی در نسخه دسکتاپ.</p>
+      </div>
+      <div class="feature">
+        <h3>💬 زیرنویس</h3>
+        <p>پشتیبانی پروژه دسکتاپ از خطوط دیالوگ و زیرنویس SRT.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="challenge">
+    <h2>🎙️ چالش دوبله LoomDub</h2>
+    <div class="grid">
+      <div class="panel">
+        <h3>جمله را با احساس اجرا کن!</h3>
+        <div class="prompt" id="promptText">
+          «چی؟! من فقط یک دقیقه چشم‌هام رو بستم؛ چرا همه‌چیز عوض شده؟!»
+        </div>
+
+        <button class="gray" id="newPrompt">🎲 جمله تازه</button>
+        <hr style="border-color:var(--border);margin:18px 0">
+
+        <button class="green" id="recordBtn">🔴 شروع ضبط</button>
+        <button class="red" id="stopBtn" disabled>⏹ توقف ضبط</button>
+        <button class="gray" id="cancelBtn" disabled>لغو شمارش</button>
+
+        <div id="status" class="status" role="status" aria-live="polite">
+          برای شروع، دکمه شروع ضبط را بزن.
+        </div>
+
+        <h3>🔊 صدای ضبط‌شده</h3>
+        <audio id="playback" controls hidden></audio>
+        <br>
+        <button id="downloadBtn" disabled>⬇️ دانلود صدا</button>
+      </div>
+
+      <div class="panel">
+        <h3>🏆 نتیجه تمرین</h3>
+        <div class="stats">
+          <div class="stat">
+            <strong id="score">—</strong>
+            <small>امتیاز از ۱۰۰</small>
+          </div>
+          <div class="stat">
+            <strong id="duration">۰</strong>
+            <small>مدت ضبط</small>
+          </div>
+          <div class="stat">
+            <strong id="volume">—</strong>
+            <small>سطح صدا</small>
+          </div>
+        </div>
+        <div class="meter"><div id="meterBar"></div></div>
+        <p class="muted" id="feedback">بعد از ضبط، نتیجه اینجا نمایش داده می‌شود.</p>
+
+        <h3>🥇 بهترین امتیازهای این دستگاه</h3>
+        <ol id="leaderboard">
+          <li>هنوز امتیازی ثبت نشده است.</li>
+        </ol>
+
+        <div class="notice">
+          امتیاز فعلی بر اساس مدت ضبط، بلندی و ثبات صدا محاسبه می‌شود؛
+          هوش مصنوعی کیفیت بازیگری یا تلفظ را داوری نمی‌کند.
+          امتیازها فقط در همین مرورگر و دستگاه ذخیره می‌شوند.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>📘 راهنمای ضبط</h2>
+    <div class="panel">
+      <ol>
+        <li>روی «شروع ضبط» بزن.</li>
+        <li>اگر مرورگر اجازه میکروفون خواست، آن را تأیید کن.</li>
+        <li>عددهای ۳، ۲، ۱ یکی‌یکی نمایش داده می‌شوند.</li>
+        <li>تا پایان شمارش، ضبط صدا شروع نمی‌شود.</li>
+        <li>بعد از نمایش پیام شروع ضبط، جمله را اجرا کن.</li>
+        <li>روی «توقف ضبط» بزن و صدایت را گوش بده یا دانلود کن.</li>
+      </ol>
+      <p class="notice">
+        نکته: برای دسترسی میکروفون، صفحه را در Chrome یا Edge با HTTPS
+        یا از طریق localhost باز کن.
+      </p>
+    </div>
+  </section>
+
+  <section id="social">
+    <h2>🌐 شبکه‌های StarLoom</h2>
+    <div class="panel">
+      <p><a href="https://www.aparat.com/StarLoom" target="_blank" rel="noopener">▶ آپارات StarLoom</a></p>
+      <p><a href="https://github.com/StarLoom325" target="_blank" rel="noopener">⌘ GitHub</a></p>
+      <p><a href="https://rubika.ir/joinc/FFEBECDA0DAJDJEWKKSMCBTXYCWKJDNV" target="_blank" rel="noopener">◆ روبیکا</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>© LoomDub — ساخته‌شده برای تمرین دوبله</footer>
+
+<!-- لایه شمارش معکوس -->
+<div id="countOverlay" aria-hidden="true">
+  <div id="countCaption">ضبط تا پایان شمارش شروع نمی‌شود</div>
+  <div id="countNumber">۳</div>
+  <button class="gray" id="overlayCancel">لغو شمارش</button>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const prompts = [
+    '«چی؟! من فقط یک دقیقه چشم‌هام رو بستم؛ چرا همه‌چیز عوض شده؟!»',
+    '«آروم باش! من نقشه دارم… البته هنوز خودم هم نمی‌دونم چیه!»',
+    '«این آخرین کلوچه بود؟! پس کارآگاه باید وارد عمل بشه!»',
+    '«کاپیتان، ما روی ماه فرود اومدیم… ولی ساندویچ‌ها کجان؟!»',
+    '«من قهرمان این داستانم؛ فقط یکی بگه دکمه شروع کجاست!»',
+    '«نه نه نه! اون اهرم قرمز رو نکش… اوه، کشیدیش!»',
+    '«من اصلاً نترسیدم؛ فقط دارم با سرعت عقب‌نشینی می‌کنم!»'
+  ];
+
+  let stream = null;
+  let recorder = null;
+  let chunks = [];
+  let countdownId = null;
+  let cancelled = false;
+  let recording = false;
+  let startedAt = 0;
+  let audioContext = null;
+  let analyser = null;
+  let animationId = null;
+  let samples = [];
+  let blobUrl = null;
+
+  const status = $('status');
+
+  function setStatus(message, type = '') {
+    status.textContent = message;
+    status.className = 'status ' + type;
+  }
+
+  function numberFa(n) {
+    return Number(n).toLocaleString('fa-IR', {
+      maximumFractionDigits: 1
+    });
+  }
+
+  function getScores() {
+    try {
+      return JSON.parse(localStorage.getItem('loomdub_scores') || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function renderScores() {
+    const list = $('leaderboard');
+    list.replaceChildren();
+
+    const scores = getScores()
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+
+    if (!scores.length) {
+      const li = document.createElement('li');
+      li.textContent = 'هنوز امتیازی ثبت نشده است.';
+      list.appendChild(li);
+      return;
+    }
+
+    scores.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.textContent =
+        `${numberFa(index + 1)}. امتیاز ${numberFa(item.score)} از ۱۰۰` +
+        ` — ${numberFa(item.duration)} ثانیه`;
+      list.appendChild(li);
+    });
+  }
+
+  function stopMeter() {
+    if (animationId) cancelAnimationFrame(animationId);
+    animationId = null;
+
+    if (audioContext) {
+      audioContext.close().catch(() => {});
+      audioContext = null;
+    }
+    analyser = null;
+  }
+
+  function stopTracks() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    stopMeter();
+  }
+
+  function hideCountdown() {
+    $('countOverlay').classList.remove('show');
+    $('countOverlay').setAttribute('aria-hidden', 'true');
+  }
+
+  function cancelCountdown() {
+    cancelled = true;
+
+    if (countdownId) {
+      clearTimeout(countdownId);
+      countdownId = null;
+    }
+
+    hideCountdown();
+    stopTracks();
+
+    $('recordBtn').disabled = false;
+    $('cancelBtn').disabled = true;
+    $('stopBtn').disabled = true;
+
+    setStatus('شمارش لغو شد؛ هیچ صدایی ضبط نشد.');
+  }
+
+  function wait(ms) {
+    return new Promise(resolve => {
+      countdownId = setTimeout(() => {
+        countdownId = null;
+        resolve();
+      }, ms);
+    });
+  }
+
+  async function startRecordingFlow() {
+    if (recording || countdownId || stream) return;
+
+    cancelled = false;
+    $('recordBtn').disabled = true;
+    $('cancelBtn').disabled = false;
+    $('stopBtn').disabled = true;
+
+    $('countOverlay').classList.add('show');
+    $('countOverlay').setAttribute('aria-hidden', 'false');
+
+    try {
+      /*
+       * ابتدا اجازه میکروفون را می‌گیریم.
+       * MediaRecorder تا بعد از شمارش ۳، ۲، ۱ شروع نمی‌شود.
+       */
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+    } catch (error) {
+      hideCountdown();
+      stopTracks();
+      $('recordBtn').disabled = false;
+      $('cancelBtn').disabled = true;
+
+      setStatus(
+        'دسترسی میکروفون برقرار نشد. اجازه میکروفون را بررسی کن و صفحه را با HTTPS یا localhost باز کن.',
+        'error'
+      );
+      return;
+    }
+
+    const numbers = ['۳', '۲', '۱'];
+
+    for (const number of numbers) {
+      if (cancelled) return;
+
+      $('countNumber').textContent = number;
+
+      // هر عدد یک ثانیه نمایش داده می‌شود.
+      await wait(1000);
+
+      if (cancelled) return;
+    }
+
+    if (cancelled) return;
+
+    countdownId = null;
+    hideCountdown();
+    beginRecording();
+  }
+
+  function beginRecording() {
+    if (!stream || cancelled) {
+      $('recordBtn').disabled = false;
+      $('cancelBtn').disabled = true;
+      return;
+    }
+
+    let options = {};
+
+    if (
+      MediaRecorder.isTypeSupported &&
+      MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+    ) {
+      options.mimeType = 'audio/webm;codecs=opus';
+    }
+
+    try {
+      recorder = new MediaRecorder(stream, options);
+    } catch (error) {
+      stopTracks();
+      $('recordBtn').disabled = false;
+      $('cancelBtn').disabled = true;
+      setStatus('مرورگر از ضبط صدا پشتیبانی نمی‌کند.', 'error');
+      return;
+    }
+
+    chunks = [];
+    samples = [];
+    recording = true;
+    startedAt = Date.now();
+
+    recorder.ondataavailable = event => {
+      if (event.data && event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    };
+
+    recorder.onerror = () => {
+      setStatus('هنگام ضبط صدا خطایی رخ داد.', 'error');
+    };
+
+    recorder.onstop = finishRecording;
+
+    // نقطه شروع واقعی ضبط دقیقاً بعد از شمارش است.
+    recorder.start(200);
+
+    startVolumeMeter();
+
+    $('stopBtn').disabled = false;
+    $('cancelBtn').disabled = true;
+
+    setStatus('🔴 ضبط شروع شد! حالا جمله را اجرا کن.', 'ok');
+  }
+
+  function startVolumeMeter() {
+    try {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      audioContext = new AudioContextClass();
+      const source = audioContext.createMediaStreamSource(stream);
+
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 1024;
+      source.connect(analyser);
+
+      const data = new Uint8Array(analyser.fftSize);
+
+      function updateMeter() {
+        if (!recording || !analyser) return;
+
+        analyser.getByteTimeDomainData(data);
+
+        let sum = 0;
+
+        for (let i = 0; i < data.length; i++) {
+          const value = (data[i] - 128) / 128;
+          sum += value * value;
+        }
+
+        const rms = Math.sqrt(sum / data.length);
+        samples.push(rms);
+
+        $('meterBar').style.width =
+          Math.min(100, rms * 350) + '%';
+
+        animationId = requestAnimationFrame(updateMeter);
+      }
+
+      updateMeter();
+    } catch (error) {
+      // ضبط صدا حتی اگر سنجش بلندی در دسترس نباشد ادامه پیدا می‌کند.
+    }
+  }
+
+  function calculateScore(duration, average, variation) {
+    const durationScore = Math.min(
+      45,
+      duration >= 3 ? 45 : (duration / 3) * 45
+    );
+
+    const volumeScore = Math.min(30, (average / 0.22) * 30);
+
+    const consistencyScore = Math.max(
+      0,
+      25 - Math.min(25, variation * 120)
+    );
+
+    return Math.round(
+      Math.max(0, Math.min(
+        100,
+        durationScore + volumeScore + consistencyScore
+      ))
+    );
+  }
+
+  function finishRecording() {
+    recording = false;
+
+    const duration = Math.max(
+      0,
+      (Date.now() - startedAt) / 1000
+    );
+
+    const mimeType = recorder.mimeType || 'audio/webm';
+    const blob = new Blob(chunks, { type: mimeType });
+
+    stopTracks();
+
+    $('recordBtn').disabled = false;
+    $('stopBtn').disabled = true;
+    $('cancelBtn').disabled = true;
+
+    if (!blob.size) {
+      setStatus('صدایی ضبط نشد. دوباره امتحان کن.', 'error');
+      return;
+    }
+
+    if (blobUrl) URL.revokeObjectURL(blobUrl);
+    blobUrl = URL.createObjectURL(blob);
+
+    const player = $('playback');
+    player.src = blobUrl;
+    player.hidden = false;
+
+    $('downloadBtn').disabled = false;
+    $('downloadBtn').onclick = () => {
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'LoomDub-Voice-Take.webm';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    };
+
+    const average = samples.length
+      ? samples.reduce((sum, value) => sum + value, 0) / samples.length
+      : 0;
+
+    const variance = samples.length
+      ? Math.sqrt(
+          samples.reduce(
+            (sum, value) => sum + (value - average) ** 2, 0
+          ) / samples.length
+        )
+      : 0;
+
+    const score = calculateScore(duration, average, variance);
+
+    $('score').textContent = numberFa(score);
+    $('duration').textContent = numberFa(duration);
+
+    $('volume').textContent =
+      average < 0.025 ? 'کم' :
+      average < 0.09 ? 'متوسط' : 'زیاد';
+
+    $('meterBar').style.width =
+      Math.min(100, average * 350) + '%';
+
+    let feedback;
+
+    if (duration < 2) {
+      feedback = 'ضبط خیلی کوتاه بود؛ جمله را کامل اجرا کن.';
+    } else if (average < 0.025) {
+      feedback = 'صدای ضبط‌شده خیلی آرام است؛ میکروفون را بررسی کن.';
+    } else if (score >= 80) {
+      feedback = 'عالی! حالا صدایت را گوش بده و اجرای خودت را بررسی کن.';
+    } else if (score >= 55) {
+      feedback = 'خوب بود! دوباره تمرین کن و جمله را کامل اجرا کن.';
+    } else {
+      feedback = 'یک بار دیگر تمرین کن؛ واضح و کامل صحبت کن.';
+    }
+
+    $('feedback').textContent = feedback;
+
+    const scores = getScores();
+    scores.push({
+      score,
+      duration: Number(duration.toFixed(1)),
+      date: Date.now()
+    });
+
+    scores.sort((a, b) => b.score - a.score);
+
+    try {
+      localStorage.setItem(
+        'loomdub_scores',
+        JSON.stringify(scores.slice(0, 5))
+      );
+    } catch (error) {
+      // اگر ذخیره‌سازی مرورگر بسته باشد، نمایش نتیجه همچنان انجام می‌شود.
+    }
+
+    renderScores();
+
+    setStatus(
+      'ضبط تمام شد! می‌توانی صدایت را گوش بدهی یا دانلود کنی.',
+      'ok'
+    );
+  }
+
+  $('recordBtn').addEventListener('click', () => {
+    if (
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia ||
+      !window.MediaRecorder
+    ) {
+      setStatus(
+        'ضبط در این مرورگر در دسترس نیست. Chrome یا Edge را با HTTPS یا localhost باز کن.',
+        'error'
+      );
+      return;
+    }
+
+    startRecordingFlow();
+  });
+
+  $('stopBtn').addEventListener('click', () => {
+    if (recorder && recorder.state !== 'inactive') {
+      $('stopBtn').disabled = true;
+      setStatus('در حال آماده‌سازی فایل صدا…');
+      recorder.stop();
+    }
+  });
+
+  $('cancelBtn').addEventListener('click', cancelCountdown);
+  $('overlayCancel').addEventListener('click', cancelCountdown);
+
+  $('newPrompt').addEventListener('click', () => {
+    const current = $('promptText').textContent;
+    let next = current;
+
+    while (next === current) {
+      next = prompts[Math.floor(Math.random() * prompts.length)];
+    }
+
+    $('promptText').textContent = next;
+  });
+
+  window.addEventListener('beforeunload', () => {
+    stopTracks();
+    if (blobUrl) URL.revokeObjectURL(blobUrl);
+  });
+
+  renderScores();
+})();
+</script>
+
+</body>
+</html>
